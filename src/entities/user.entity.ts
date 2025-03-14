@@ -1,31 +1,25 @@
-import { Field, Int, ObjectType } from "@nestjs/graphql";
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Profile } from "./profile.entity";
+import { Field, Int, ObjectType } from "@nestjs/graphql";
 
 @ObjectType()
 @Entity()
 export class User {
     @Field(() => Int)
     @PrimaryGeneratedColumn()
-    id: number
+    id: number 
 
     @Field()
     @Column({unique: true})
-    username: string
+    email: string;
 
     @Field()
     @Column()
     password: string 
 
-    @Field()
-    @Column({nullable: true})
-    age:number 
-
-    @Field()
-    @Column({nullable: true})
-    city: string
-
     @Field(() => Profile , {nullable: true})
     @OneToOne(() => Profile, profile => profile.user)
     profile: Promise<Profile>
+
+    
 }

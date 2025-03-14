@@ -15,19 +15,17 @@ export class Profile {
 
     @Field()
     @Column()
-    gender: string 
-
-    @Field(() => Int)
-    @Column()
-    phoneNumber: number
+    city: string 
 
     @Field()
     @Column()
     postalCode: string
 
     @Field(() => User)
-    @OneToOne(() => User, user => user.profile, {cascade: true})
+    @OneToOne(() => User, user => user.profile)
     @JoinColumn()
     user: Promise<User>
+
+
 
 }
