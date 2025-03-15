@@ -5,6 +5,7 @@ import { CreateUserInput } from 'src/dto/create_user.input';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import * as argon2 from 'argon2'
+import { PaginationArgs } from 'src/args/pagination.args';
 
 @Injectable()
 export class UserService {
@@ -13,17 +14,16 @@ export class UserService {
     ){}
 
 
-    async getAllUsers(limit,skip){
-        if(limit > 15){
+    async getAllUsers(paginationArgs: PaginationArgs){
+        if(paginationArgs.limit > 15){
             throw new HttpException("You can not get more then 15 users", HttpStatus.BAD_REQUEST)
         }
         
-        return this.usersRepository.find({skip: skip, take: limit})
+        return this.usersRepository.find({skip: paginationArgs.skip, take: paginationArgs.limit})
     }
 
     async getUserById(id: number){
         const user = await this.usersRepository.findOne({where: {id}})
-        console.log(user)
         if(!user){
             throw new HttpException("No user found", HttpStatus.NOT_FOUND)
         }
@@ -32,7 +32,7 @@ export class UserService {
 
     async createUser(createUser: CreateUserInput){
         const password = await argon2.hash(createUser.password)
-        const newUser = await this.usersRepository.create({...createUser, password: password})
+        const newUser = await this.usersRepository.create({...createUser, password: password, role: "user"})
         return await this.usersRepository.save(newUser)
     }
 
@@ -52,5 +52,6 @@ export class UserService {
         }
         return await this.usersRepository.remove(user)
     }
+
 
 }

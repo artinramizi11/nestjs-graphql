@@ -8,20 +8,39 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
 import { ProfileModule } from './profile/profile.module';
+import { JwtModule, JwtService } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AuthModule } from './auth/auth.module';
+import configuration from './config/configuration';
 
 
 @Module({
-  imports: [GraphQLModule.forRoot<ApolloDriverConfig>({
+  imports: [
+    GraphQLModule.forRoot<ApolloDriverConfig>({
     driver: ApolloDriver,
     playground: true,
     autoSchemaFile: true,
-  }), UserModule, TypeOrmModule.forRoot({
-    url: "postgresql://neondb_owner:npg_zdYtJ1Hsrwx4@ep-snowy-truth-a5l2ddzm-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
+  }),
+  ConfigModule.forRoot({
+    load: [configuration],
+    isGlobal: true
+  }),
+  UserModule,
+  TypeOrmModule.forRootAsync({
+    imports: [ConfigModule],
+    inject: [ConfigService],
+    useFactory: (configService: ConfigService) => ({
+      url: configService.get("db_url") as string,
     type: "postgres",
     port: 3306,
     entities: [User,Profile],
     synchronize: true
-  }), ProfileModule],
+    })
+  }),
+  ProfileModule,
+  AuthModule,
+
+],
   controllers: [AppController],
   providers: [AppService],
 })

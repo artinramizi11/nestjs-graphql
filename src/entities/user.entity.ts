@@ -13,13 +13,16 @@ export class User {
     @Column({unique: true})
     email: string;
 
-    @Field()
     @Column()
     password: string 
 
     @Field(() => Profile , {nullable: true})
     @OneToOne(() => Profile, profile => profile.user , {cascade: true})
     profile: Profile
+
+    @Field()
+    @Column({nullable: true})
+    role: string
 
     
 }

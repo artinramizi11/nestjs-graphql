@@ -1,9 +1,11 @@
 import {  Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from 'src/entities/user.entity';
-import { ParseIntPipe } from '@nestjs/common';
+import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Profile } from 'src/entities/profile.entity';
 import { CreateUserInput } from 'src/dto/create_user.input';
+import { PaginationArgs } from 'src/args/pagination.args';
+import { JwtAuthGuard } from 'src/guards/JwtAuthGuard.guard';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -13,13 +15,11 @@ export class UserResolver {
     ){}
 
     @Query(() => [User] , {name: "users"})
-    getUsers(
-        @Args("limit", {type: () => Int}) limit: number,
-        @Args("skip", {type: () => Int}) skip: number
-    ){
-        return this.usersService.getAllUsers(limit,skip)
+    getUsers(@Args() paginationArgs: PaginationArgs){
+        return this.usersService.getAllUsers(paginationArgs)
     }
 
+    @UseGuards(JwtAuthGuard)
     @Query(() => User, {name: "single_user"})
     getUserById(@Args("id", {type: () => Int}) id: number){
         return this.usersService.getUserById(id)
