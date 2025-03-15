@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { User } from "./user.entity";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
 
@@ -17,14 +17,14 @@ export class Profile {
     @Column()
     city: string 
 
-    @Field()
+    @Field(() => Int)
     @Column()
-    postalCode: string
+    postalCode: number
 
     @Field(() => User)
-    @OneToOne(() => User, user => user.profile)
+    @OneToOne(() => User, user => user.profile , {onDelete: "CASCADE"} )
     @JoinColumn()
-    user: Promise<User>
+    user: User
 
 
 

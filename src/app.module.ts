@@ -7,6 +7,7 @@ import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
+import { ProfileModule } from './profile/profile.module';
 
 
 @Module({
@@ -20,7 +21,7 @@ import { Profile } from './entities/profile.entity';
     port: 3306,
     entities: [User,Profile],
     synchronize: true
-  })],
+  }), ProfileModule],
   controllers: [AppController],
   providers: [AppService],
 })

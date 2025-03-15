@@ -18,8 +18,8 @@ export class User {
     password: string 
 
     @Field(() => Profile , {nullable: true})
-    @OneToOne(() => Profile, profile => profile.user)
-    profile: Promise<Profile>
+    @OneToOne(() => Profile, profile => profile.user , {cascade: true})
+    profile: Profile
 
     
 }

@@ -13,19 +13,16 @@ export class UserResolver {
     ){}
 
     @Query(() => [User] , {name: "users"})
-    getUsers(){
-        return this.usersService.getAllUsers()
+    getUsers(
+        @Args("limit", {type: () => Int}) limit: number,
+        @Args("skip", {type: () => Int}) skip: number
+    ){
+        return this.usersService.getAllUsers(limit,skip)
     }
 
     @Query(() => User, {name: "single_user"})
     getUserById(@Args("id", {type: () => Int}) id: number){
         return this.usersService.getUserById(id)
-    }
-
-    @ResolveField(() => Profile)
-    async profile(@Parent() user: User){
-        return await user.profile
-
     }
 
     @Mutation(() => User)
@@ -35,11 +32,16 @@ export class UserResolver {
 
     @Mutation(() => User)
     updateUser(
-        @Args("id", ParseIntPipe) id: number,
+        @Args("id", {type: () => Int}) id: number,   
         @Args("input") updateUserInput: CreateUserInput
     ){
         return this.usersService.updateUser(id,updateUserInput)
 
+    }
+
+    @Mutation(() => User)
+    deleteUser(@Args("id", {type: () => Int}) id: number){
+        return this.usersService.deleteUser(id)
     }
 
 }
