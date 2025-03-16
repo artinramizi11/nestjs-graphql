@@ -32,7 +32,7 @@ export class UserService {
 
     async createUser(createUser: CreateUserInput){
         const password = await argon2.hash(createUser.password)
-        const newUser = await this.usersRepository.create({...createUser, password: password, role: "user"})
+        const newUser = await this.usersRepository.create({...createUser, password: password})
         return await this.usersRepository.save(newUser)
     }
 

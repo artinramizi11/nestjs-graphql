@@ -1,6 +1,7 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Profile } from "./profile.entity";
 import { Field, Int, ObjectType } from "@nestjs/graphql";
+import { Role } from "src/role.enum";
 
 @ObjectType()
 @Entity()
@@ -20,9 +21,16 @@ export class User {
     @OneToOne(() => Profile, profile => profile.user , {cascade: true})
     profile: Profile
 
-    @Field()
-    @Column({nullable: true})
-    role: string
+    @Field(() => Role, {nullable: true})
+    @Column({type:"enum", enum: Role , default:Role.USER})
+    role: Role
+
+    @CreateDateColumn({type:"timestamp"})
+    createdAt: Date
+
+    @UpdateDateColumn({type:"timestamp"})
+    updatedAt: Date
+   
 
     
 }

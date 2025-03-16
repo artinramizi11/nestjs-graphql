@@ -8,6 +8,6 @@ export class AuthPayload {
     @Field()
     accessToken: string
 
-    @Field({nullable: true})
+    @Field()
     role: string
 }

@@ -16,8 +16,12 @@ export class AuthResolver {
     return this.authService.generateToken(user)
   }
 
-  @Query(() => User)
+  @Query(() => User , {name:"user_information"})
   async getProfile(@Context() context){
     return this.authService.findUserById(context.req.user.id)
   }
+
+  
+
+
 }

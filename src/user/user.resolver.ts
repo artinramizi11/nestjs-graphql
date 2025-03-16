@@ -1,14 +1,10 @@
-import {  Args, Int, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql';
+import {  Args, Int, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { UserService } from './user.service';
 import { User } from 'src/entities/user.entity';
-import { ParseIntPipe, UseGuards } from '@nestjs/common';
-import { Profile } from 'src/entities/profile.entity';
 import { CreateUserInput } from 'src/dto/create_user.input';
 import { PaginationArgs } from 'src/args/pagination.args';
-import { JwtAuthGuard } from 'src/guards/JwtAuth.guard';
 import { Roles } from 'src/decorators/role.decorator';
 import { Role } from 'src/role.enum';
-import { RoleGuard } from 'src/guards/roles.guard';
 import { PublicHandler } from 'src/decorators/public.decorator';
 
 @Resolver(() => User)
@@ -25,6 +21,7 @@ export class UserResolver {
     }
 
     @Roles(Role.USER, Role.ADMIN)
+    @PublicHandler()
     @Query(() => User, {name: "single_user"})
     getUserById(@Args("id", {type: () => Int}) id: number){
         return this.usersService.getUserById(id)

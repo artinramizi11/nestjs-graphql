@@ -26,6 +26,7 @@ export class AuthService {
         if(!validatePassword){
             throw new UnauthorizedException("Wrong Credentials")
         }
+        console.log(user)
 
         return user
     }
