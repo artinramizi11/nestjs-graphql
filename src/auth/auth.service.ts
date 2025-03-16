@@ -1,11 +1,9 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { SignInInput } from 'src/dto/signin.input';
 import { User } from 'src/entities/user.entity';
-import { UserService } from 'src/user/user.service';
 import { Repository } from 'typeorm';
 import * as argon2 from "argon2"
-import { AuthPayload } from 'src/entities/auth_payload';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 
@@ -42,5 +40,21 @@ export class AuthService {
         accessToken: token,
         role: user.role
       }
+    }
+
+    async validateJwtUser(userId: number){
+        const user = await this.usersRepository.findOne({where: {id: userId}})
+        if(!user){
+            throw new HttpException("No user found with this ID", HttpStatus.BAD_REQUEST)
+        }
+        const jwtUser = {
+            userId: user.id,
+            role: user.role
+        }
+        return jwtUser
+    }
+
+    async findUserById(id: number){
+        return this.usersRepository.findOne({where: {id}})
     }
 }

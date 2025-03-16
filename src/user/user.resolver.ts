@@ -5,7 +5,11 @@ import { ParseIntPipe, UseGuards } from '@nestjs/common';
 import { Profile } from 'src/entities/profile.entity';
 import { CreateUserInput } from 'src/dto/create_user.input';
 import { PaginationArgs } from 'src/args/pagination.args';
-import { JwtAuthGuard } from 'src/guards/JwtAuthGuard.guard';
+import { JwtAuthGuard } from 'src/guards/JwtAuth.guard';
+import { Roles } from 'src/decorators/role.decorator';
+import { Role } from 'src/role.enum';
+import { RoleGuard } from 'src/guards/roles.guard';
+import { PublicHandler } from 'src/decorators/public.decorator';
 
 @Resolver(() => User)
 export class UserResolver {
@@ -14,22 +18,25 @@ export class UserResolver {
         private usersService: UserService
     ){}
 
+    @Roles(Role.ADMIN,Role.SUPERADMIN)
     @Query(() => [User] , {name: "users"})
     getUsers(@Args() paginationArgs: PaginationArgs){
         return this.usersService.getAllUsers(paginationArgs)
     }
 
-    @UseGuards(JwtAuthGuard)
+    @Roles(Role.USER, Role.ADMIN)
     @Query(() => User, {name: "single_user"})
     getUserById(@Args("id", {type: () => Int}) id: number){
         return this.usersService.getUserById(id)
     }
 
+    @Roles(Role.SUPERADMIN)
     @Mutation(() => User)
     createUser(@Args("input") createUserInput: CreateUserInput){
         return this.usersService.createUser(createUserInput)
     }
 
+    @Roles(Role.ADMIN)
     @Mutation(() => User)
     updateUser(
         @Args("id", {type: () => Int}) id: number,   
@@ -39,6 +46,7 @@ export class UserResolver {
 
     }
 
+    @Roles(Role.SUPERADMIN)
     @Mutation(() => User)
     deleteUser(@Args("id", {type: () => Int}) id: number){
         return this.usersService.deleteUser(id)

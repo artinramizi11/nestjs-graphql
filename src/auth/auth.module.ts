@@ -1,13 +1,13 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
-import { UserModule } from 'src/user/user.module';
 import { UserService } from 'src/user/user.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Profile } from 'src/entities/profile.entity';
 import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtStrategy } from 'src/strategies/jwt.strategy';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User,Profile]),JwtModule.registerAsync({
@@ -20,6 +20,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         }
       })
     })],
-  providers: [AuthResolver, AuthService , UserService, JwtService],
+  providers: [AuthResolver, AuthService , UserService , JwtStrategy],
 })
 export class AuthModule {}

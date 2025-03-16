@@ -8,14 +8,19 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { Profile } from './entities/profile.entity';
 import { ProfileModule } from './profile/profile.module';
-import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import configuration from './config/configuration';
+import { PassportModule } from '@nestjs/passport';
+import { APP_GUARD } from '@nestjs/core';
+import { JwtAuthGuard } from './guards/JwtAuth.guard';
 
 
 @Module({
   imports: [
+    PassportModule.register({
+      defaultStrategy: "jwt"
+    }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
     driver: ApolloDriver,
     playground: true,
@@ -42,6 +47,6 @@ import configuration from './config/configuration';
 
 ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService , {provide: APP_GUARD, useClass: JwtAuthGuard}],
 })
 export class AppModule {}
