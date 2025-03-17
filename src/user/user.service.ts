@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, ConflictException, HttpException, HttpStatus, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { NotFoundError } from 'rxjs';
 import { CreateUserInput } from 'src/dto/create_user.input';
@@ -16,7 +16,10 @@ export class UserService {
 
     async getAllUsers(paginationArgs: PaginationArgs){
         if(paginationArgs.limit > 15){
-            throw new HttpException("You can not get more then 15 users", HttpStatus.BAD_REQUEST)
+            throw new BadRequestException("You can not set more then 15 users")
+        }
+        if(paginationArgs.skip < 0) {
+            throw new BadRequestException("You can not set negative numbers in skip")
         }
         
         return this.usersRepository.find({skip: paginationArgs.skip, take: paginationArgs.limit})
@@ -25,21 +28,30 @@ export class UserService {
     async getUserById(id: number){
         const user = await this.usersRepository.findOne({where: {id}})
         if(!user){
-            throw new HttpException("No user found", HttpStatus.NOT_FOUND)
+            throw new NotFoundException(`No user found with ID: ${id}`)
         }
         return user
     }
 
     async createUser(createUser: CreateUserInput){
-        const password = await argon2.hash(createUser.password)
-        const newUser = await this.usersRepository.create({...createUser, password: password})
+        const samePassword = await argon2.hash(createUser.password)
+         try {
+            const newUser = await this.usersRepository.create({...createUser, password: samePassword})
         return await this.usersRepository.save(newUser)
+         } catch(err) {
+            console.log(err)
+            if(err.code === '23505'){
+                throw new ConflictException("Email address is already in use")
+            }
+            throw new HttpException(err, HttpStatus.BAD_REQUEST)
+         }
+                
     }
 
     async updateUser(id: number, updatedInfo: CreateUserInput){
         const user = await this.usersRepository.preload({id,...updatedInfo});
         if (!user) {
-            throw new HttpException("No user found with this ID", HttpStatus.NOT_FOUND);
+            throw new NotFoundException(`No user found with ID: ${id} to update`)
         }
         
         return await this.usersRepository.save(user);
@@ -48,7 +60,7 @@ export class UserService {
     async deleteUser(id: number){
         const user = await this.usersRepository.findOne({where: {id}})
         if(!user){
-            throw new HttpException("Can not delete non existing user",HttpStatus.NOT_FOUND)
+            throw new NotFoundException(`You can not delete a non-existing user`)
         }
         return await this.usersRepository.remove(user)
     }

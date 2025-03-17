@@ -15,26 +15,26 @@ export class UserResolver {
     ){}
 
     @Roles(Role.ADMIN,Role.SUPERADMIN)
-    @Query(() => [User] , {name: "users"})
+    @Query(() => [User] , {name: "get_users"})
     getUsers(@Args() paginationArgs: PaginationArgs){
         return this.usersService.getAllUsers(paginationArgs)
     }
 
     @Roles(Role.USER, Role.ADMIN)
     @PublicHandler()
-    @Query(() => User, {name: "single_user"})
+    @Query(() => User, {name: "get_user_by_id"})
     getUserById(@Args("id", {type: () => Int}) id: number){
         return this.usersService.getUserById(id)
     }
 
     @Roles(Role.SUPERADMIN)
-    @Mutation(() => User)
+    @Mutation(() => User , {name:"create_user"})
     createUser(@Args("input") createUserInput: CreateUserInput){
         return this.usersService.createUser(createUserInput)
     }
 
     @Roles(Role.ADMIN)
-    @Mutation(() => User)
+    @Mutation(() => User, {name:"update_user"})
     updateUser(
         @Args("id", {type: () => Int}) id: number,   
         @Args("input") updateUserInput: CreateUserInput
@@ -44,7 +44,7 @@ export class UserResolver {
     }
 
     @Roles(Role.SUPERADMIN)
-    @Mutation(() => User)
+    @Mutation(() => User, {name:"delete_user"})
     deleteUser(@Args("id", {type: () => Int}) id: number){
         return this.usersService.deleteUser(id)
     }
