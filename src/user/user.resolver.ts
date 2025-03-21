@@ -10,9 +10,7 @@ import { PublicHandler } from 'src/decorators/public.decorator';
 @Resolver(() => User)
 export class UserResolver {
 
-    constructor(
-        private usersService: UserService
-    ){}
+    constructor(private usersService: UserService){}
 
     @Roles(Role.ADMIN,Role.SUPERADMIN)
     @Query(() => [User] , {name: "get_users"})
@@ -48,5 +46,7 @@ export class UserResolver {
     deleteUser(@Args("id", {type: () => Int}) id: number){
         return this.usersService.deleteUser(id)
     }
+
+ 
 
 }

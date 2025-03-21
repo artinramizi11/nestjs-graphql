@@ -31,16 +31,12 @@ import { JwtAuthGuard } from './guards/JwtAuth.guard';
     isGlobal: true
   }),
   UserModule,
-  TypeOrmModule.forRootAsync({
-    imports: [ConfigModule],
-    inject: [ConfigService],
-    useFactory: (configService: ConfigService) => ({
-      url: configService.get("db_url") as string,
+  TypeOrmModule.forRoot({
+    url: "postgresql://neondb_owner:npg_zdYtJ1Hsrwx4@ep-snowy-truth-a5l2ddzm-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
     type: "postgres",
-    port: 3306,
-    entities: [User,Profile],
+    port: 5432,
+    entities: [User,Profile], 
     synchronize: true
-    })
   }),
   ProfileModule,
   AuthModule,

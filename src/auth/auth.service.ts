@@ -6,6 +6,7 @@ import { Repository } from 'typeorm';
 import * as argon2 from "argon2"
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
+import { AuthPayload } from 'src/entities/auth_payload';
 
 @Injectable()
 export class AuthService {
@@ -26,12 +27,11 @@ export class AuthService {
         if(!validatePassword){
             throw new UnauthorizedException("Wrong Credentials")
         }
-        console.log(user)
 
         return user
     }
 
-    async generateToken(user: User) {
+    async generateToken(user: User): Promise<AuthPayload> {
 
         const payload = {userId: user.id, email: user.email, role: user.role}
         const token = await this.jwtService.signAsync(payload,{secret: this.configService.get("jwt_secret_key")})

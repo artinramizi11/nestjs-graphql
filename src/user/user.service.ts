@@ -66,4 +66,9 @@ export class UserService {
     }
 
 
+    async testing(){
+        return await this.usersRepository.find()
+    }
+
+
 }

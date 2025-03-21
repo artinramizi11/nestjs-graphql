@@ -1,12 +1,22 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, SetMetadata } from '@nestjs/common';
 import { AppService } from './app.service';
+import { DataSource, EntityManager } from 'typeorm';
+import { User } from './entities/user.entity';
+import { Role } from './role.enum';
 
 @Controller()
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private readonly appService: AppService,
+    private entityManager: EntityManager
+  ) {}
 
   @Get()
-  getHello(): string {
-    return this.appService.getHello();
+  @SetMetadata("public",true)
+  getHello() {
+    return this.entityManager.count(User, {
+      where: {role: Role.USER}
+    })
+
   }
 }

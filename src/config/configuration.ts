@@ -1,6 +1,9 @@
+import * as dotenv from 'dotenv'
+dotenv.config()
+
 export default () => ({
-    jwt_secret_key: "jwt_secret_key",
-    jwt_expires_time: "1h",
-    db_url: "postgresql://neondb_owner:npg_zdYtJ1Hsrwx4@ep-snowy-truth-a5l2ddzm-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require",
+    jwt_secret_key: process.env.jwt_secret_key,
+    jwt_expires_time: process.env.jwt_expires_time,
+    db_url: process.env.db_url,
     
 })
